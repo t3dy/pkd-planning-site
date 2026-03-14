@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+@theme {
+  --color-pkd-50: #eef5fa;
+  --color-pkd-100: #d4e6f1;
+  --color-pkd-200: #a9cde3;
+  --color-pkd-300: #7eb4d5;
+  --color-pkd-400: #5c9bbf;
+  --color-pkd-500: #3A7CA5;
+  --color-pkd-600: #2e6384;
+  --color-pkd-700: #234a63;
+  --color-pkd-800: #173142;
+  --color-pkd-900: #0c1921;
+}
+
+/* Hand-drawn font */
+.font-hand {
+  font-family: 'Caveat', cursive;
+}
+
+/* Wobbly borders — xkcd style */
+.border-wobbly {
+  border: 2px solid #1a1a1a;
+  border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+}
+
+.border-wobbly-light {
+  border: 1.5px solid #d1d5db;
+  border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+}
+
+.border-wobbly-accent {
+  border: 2px solid #3A7CA5;
+  border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+}
+
+/* Card hover effect */
+.skill-card:hover {
+  transform: rotate(-0.5deg);
+  transition: transform 0.2s ease;
+}
+
+.skill-card {
+  transition: transform 0.2s ease;
+}
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Flow arrows */
+.flow-arrow::after {
+  content: '\2192';
+  font-size: 1.5rem;
+  color: #3A7CA5;
+  font-family: 'Caveat', cursive;
+  font-weight: 700;
+}
+
+@media (max-width: 768px) {
+  .flow-arrow::after {
+    content: '\2193';
+  }
+}
+
+/* Code blocks */
+code {
+  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Mono', 'Droid Sans Mono', 'Source Code Pro', monospace;
+  font-size: 0.875em;
+}
