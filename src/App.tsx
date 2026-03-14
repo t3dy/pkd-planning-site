@@ -795,7 +795,15 @@ function SkillCard({ skill, isExpanded, onToggle }: { skill: PKDSkill; isExpande
   const failureModeNames = FAILURE_MODES.filter(fm => skill.prevents.includes(fm.id)).map(fm => fm.name)
 
   return (
-    <div className={`skill-card border-wobbly bg-white p-5 cursor-pointer ${skill.isCore ? 'ring-2 ring-pkd-300' : ''}`} onClick={onToggle}>
+    <div
+      className={`skill-card border-wobbly bg-white p-5 cursor-pointer ${skill.isCore ? 'ring-2 ring-pkd-300' : ''}`}
+      onClick={onToggle}
+      role="button"
+      aria-expanded={isExpanded}
+      aria-label={`${skill.character} — ${skill.purpose}. Click to ${isExpanded ? 'collapse' : 'expand'} details.`}
+      tabIndex={0}
+      onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onToggle() } }}
+    >
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap mb-1">
@@ -1070,7 +1078,12 @@ export default function App() {
           </div>
 
           {/* Mobile menu button */}
-          <button className="md:hidden text-gray-600" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+          <button
+            className="md:hidden text-gray-600"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+            aria-expanded={mobileMenuOpen}
+          >
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
@@ -1226,19 +1239,40 @@ export default function App() {
               value={complexity}
               onChange={e => setComplexity(Number(e.target.value))}
               className="flex-1 accent-pkd-500"
+              aria-label="Project complexity: 1 for simple, 2 for medium, 3 for full pipeline"
+              aria-valuemin={1}
+              aria-valuemax={3}
+              aria-valuenow={complexity}
+              aria-valuetext={complexity === 1 ? 'Simple' : complexity === 2 ? 'Medium' : 'Full Pipeline'}
             />
             <span className="text-sm text-gray-500 whitespace-nowrap">Full Pipeline</span>
           </div>
 
           {/* Flow diagram */}
-          <div className="flex flex-wrap md:flex-nowrap items-center gap-2 md:gap-0 justify-center mb-8">
+          <div className="hidden md:flex md:flex-nowrap items-center gap-0 justify-center mb-8">
             {WORKFLOW_STAGES.map((stage, i) => {
               const visible = stage.minComplexity <= complexity
               return (
                 <div key={stage.number} className="flex items-center">
                   <WorkflowNode stage={stage} isVisible={visible} />
                   {i < WORKFLOW_STAGES.length - 1 && visible && WORKFLOW_STAGES[i + 1].minComplexity <= complexity && (
-                    <div className="flow-arrow px-1 hidden md:block" />
+                    <div className="flow-arrow px-1" />
+                  )}
+                </div>
+              )
+            })}
+          </div>
+          {/* Mobile flow — vertical with arrow connectors */}
+          <div className="flex md:hidden flex-col items-center gap-0 mb-8">
+            {WORKFLOW_STAGES.map((stage, i) => {
+              const visible = stage.minComplexity <= complexity
+              if (!visible) return null
+              const nextVisible = WORKFLOW_STAGES.slice(i + 1).some(s => s.minComplexity <= complexity)
+              return (
+                <div key={stage.number} className="flex flex-col items-center w-full max-w-xs">
+                  <WorkflowNode stage={stage} isVisible={true} />
+                  {nextVisible && (
+                    <div className="text-pkd-500 font-hand text-2xl font-bold py-1">&darr;</div>
                   )}
                 </div>
               )
@@ -1268,8 +1302,10 @@ export default function App() {
           <SectionTitle id="skill-browser">All 33 Skills</SectionTitle>
 
           {/* Category tabs */}
-          <div className="flex gap-2 flex-wrap mb-8">
+          <div className="flex gap-2 flex-wrap mb-8" role="tablist" aria-label="Filter skills by category">
             <button
+              role="tab"
+              aria-selected={activeCategory === 'all'}
               onClick={() => setActiveCategory('all')}
               className={`px-3 py-1.5 rounded-full text-sm transition-colors border-wobbly-light ${activeCategory === 'all' ? 'bg-pkd-500 text-white border-pkd-500' : 'bg-white text-gray-600 hover:bg-gray-50'}`}
             >
@@ -1279,6 +1315,8 @@ export default function App() {
               const count = SKILLS.filter(s => s.category === key).length
               return (
                 <button
+                  role="tab"
+                  aria-selected={activeCategory === key}
                   key={key}
                   onClick={() => setActiveCategory(key)}
                   className={`px-3 py-1.5 rounded-full text-sm transition-colors border-wobbly-light ${activeCategory === key ? 'bg-pkd-500 text-white border-pkd-500' : 'bg-white text-gray-600 hover:bg-gray-50'}`}
