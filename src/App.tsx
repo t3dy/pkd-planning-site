@@ -1,11 +1,12 @@
 import { useState } from 'react'
+import skillTexts from '../skill-texts.json'
 import {
   Zap, Coins, Code, Bot, Cpu, Layers,
   ChevronDown, ChevronUp, BookOpen, Terminal,
   Shield, Eye, FileText, Brain,
   Search, Target, Lightbulb, ArrowRight,
   CheckCircle, XCircle, Star,
-  Menu, X
+  Menu, X, FileCode
 } from 'lucide-react'
 
 // ============================================================
@@ -793,6 +794,8 @@ function Badge({ children, variant = 'default' }: { children: React.ReactNode; v
 
 function SkillCard({ skill, isExpanded, onToggle }: { skill: PKDSkill; isExpanded: boolean; onToggle: () => void }) {
   const failureModeNames = FAILURE_MODES.filter(fm => skill.prevents.includes(fm.id)).map(fm => fm.name)
+  const [showFullPrompt, setShowFullPrompt] = useState(false)
+  const fullText = (skillTexts as Record<string, string>)[skill.command.replace(/^\//, '')]
 
   return (
     <div
@@ -848,6 +851,22 @@ function SkillCard({ skill, isExpanded, onToggle }: { skill: PKDSkill; isExpande
                   <Badge key={name} variant="gate">{name}</Badge>
                 ))}
               </div>
+            </div>
+          )}
+
+          {fullText && (
+            <div>
+              <button
+                onClick={e => { e.stopPropagation(); setShowFullPrompt(!showFullPrompt) }}
+                className="flex items-center gap-2 text-sm font-medium text-pkd-600 hover:text-pkd-800 transition-colors border border-pkd-200 rounded-lg px-3 py-2 hover:bg-pkd-50"
+              >
+                <FileCode className="w-4 h-4" />
+                {showFullPrompt ? 'Hide Full Prompt' : 'View Full Prompt'}
+                {showFullPrompt ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+              </button>
+              {showFullPrompt && (
+                <pre className="mt-3 p-4 bg-gray-50 border border-gray-200 rounded-lg text-xs text-gray-700 leading-relaxed overflow-x-auto whitespace-pre-wrap font-mono max-h-96 overflow-y-auto">{fullText}</pre>
+              )}
             </div>
           )}
         </div>
